@@ -73,6 +73,28 @@
     thead {
       background-color: #f2f2f2;
     }
+
+    #tableContainer {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid black;
+      width: 60%;
+      margin: 0 auto;
+    }
+
+    @media screen and (max-width:1024px) {
+      #tableContainer {
+        width: 80%;
+
+      }
+    }
+
+    @media screen and (max-width:600px) {
+      #tableContainer {
+        width: 100%;
+
+      }
+    }
   </style>
 </head>
 
@@ -91,14 +113,12 @@
     <br>
     <div class="buttons">
       <button type="button" id="calc">計算利息</button>
-      <button type="button" onclick="reset()">重置輸入</button>
+      <button type="button" onclick="reset_input()">重置輸入</button>
     </div>
   </form>
-  <div>
-    <h1>貸款金額:10000000 總利息支出:458650 總金額:1458650</h1>
-  </div>
-  <div id="result" style="margin-top: 20px;">
 
+  <div id="result" style="margin-top: 20px;"></div>
+  <div id="tableContainer">
     <table id="resultTable">
       <thead>
         <tr>
@@ -116,9 +136,6 @@
 
       </tbody>
     </table>
-
-
-
   </div>
 
   <script>
@@ -131,10 +148,12 @@
 
     console.log(principalEl, rateEl, timeEl, calcEl, resultEl);
 
-    function reset() {
-      principalEl.innerHTML = "";
-      rateEl.innerHTML = "";
-      timeEl.innerHTML = "";
+    function reset_input() {
+      principalEl.value = "";
+      rateEl.value = "";
+      timeEl.value = "";
+      resultEl.innerHTML = "";
+      resultTableEl.innerHTML = "";
     }
 
     calcEl.addEventListener("click", () => {
@@ -148,10 +167,12 @@
       //1.計算每個月應還本金
       let month_pay = Math.round(principal / months);
       let tempHtml = "";
+      let total_inserest = 0;
       //2.計算每個月利息
       for (let i = 0; i < months; i++) {
         //計算利息
         let interest = Math.round(principal * month_rate);
+        total_interest += interest;
         //本金減去每個月應還本金
         principal -= month_pay;
         //每月應還(本金+利息),剩餘貸款
@@ -165,9 +186,11 @@
           //tempHtml = `${i + 1}, ${month_pay}, ${interest},${month_pay + interest}, ${principal}`;
         }
         tempHtml += "</tr>";
-
+        resultTableEl.innerHTML += tempHtml;
       }
-      resultTableEl.innerHTML += tempHtml;
+      resultEl.innerHTML = `<h1>貸款金額:${principalEl.value} 總利息支出:${total_inserest} 總金額:${Number(principalEl.value) + Number(total_inserest)}</h1>`
+
+
 
     });
 
